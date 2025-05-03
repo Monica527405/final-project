@@ -1,0 +1,96 @@
+---
+title: "Final Project"
+author: "Monica Lamichhane"
+format: html
+---
+
+## Research Questions
+
+1.  How much time do college students and high school students spend studying on average?\
+2.  Is there a relationship between screen time and sleep?
+
+## Load Libraries and Data
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+# Load the data set
+student_data <- read_csv("student_study_data.csv")
+
+# Preview the first few rows
+head(student_data)
+```
+# Check for parsing issues
+problems(student_study_data.csv)
+
+
+## Descriptive Statistics
+
+```{r}
+student_data %>%
+  group_by(education_level) %>%
+  summarise(
+    avg_study_time = mean(study_time, na.rm = TRUE),
+    sd_study_time = sd(study_time, na.rm = TRUE),
+    avg_sleep = mean(sleep_hours, na.rm = TRUE),
+    sd_sleep = sd(sleep_hours, na.rm = TRUE),
+    avg_screen = mean(screen_time, na.rm = TRUE),
+    sd_screen = sd(screen_time, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+## T-Test Results
+
+The **Welch Two Sample t-test** was conducted to compare the study time between college and high school students. The results showed:
+
+- t = 4.6214
+- df = 92.961
+- p-value = 1.225e-05 (which is much smaller than 0.05, indicating a significant difference)
+- The 95% confidence interval for the difference in means is between 0.5616 and 1.408.
+
+### Interpretation:
+The average amount of time spent studying is 2.28 hours for high school students and 3.26 hours for college students. This shows that compared to high school students, college students devote a lot more time to studying.
+
+
+## Visualizations
+
+### Histogram of Study Time
+```{r}
+ggplot(student_data, aes(x = study_time, fill = education_level)) + 
+  geom_histogram(position = "identity", bins = 20, alpha = 0.6) +
+  labs(title = "Study Time Distribution", x = "Study Time (hours)", y = "Count")
+```
+
+## Box plot: Sleep Hours by Education Level
+
+```{r}
+ggplot(student_data, aes(x = education_level, y = sleep_hours, fill = education_level)) + 
+  geom_boxplot() + 
+  labs(title = "Sleep Hours by Education Level", x = "Education Level", y = "Sleep Hours")
+```
+## Scatter plot: Screen Time vs Sleep Hours
+
+```{r}
+ggplot(student_data, aes(x = screen_time, y = sleep_hours, color = education_level)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Screen Time vs Sleep Hours", x = "Screen Time", y = "Sleep Hours") +
+  theme_minimal()
+```
+## Correlation Analysis
+In order to determine the relationship between screen time and sleep duration, I used Pearson's correlation coefficient.
+
+
+```{r}
+# Calculate correlation between screen time and sleep hours
+correlation_result <- cor(student_data$screen_time, student_data$sleep_hours, use = "complete.obs")
+
+# Print the result
+correlation_result
+```
+## Correlation Interpretation 
+Screen time and sleep duration have a weakly negative link, with a correlation coefficient of about -0.2436. This suggests that although the effect is not huge, students who spend more time on screens often get a little less sleep.
+
+## Conclusion
+
+This study analyzed the relationship between high school and college students study time, sleep duration, and screen use. The two groups average study times clearly differed, with college students spending more time to their studies than high school students, according to the descriptive data. It is interesting to point out that high school students typically reported getting more sleep than college students, which is the line with expectations regarding work and age-related sleep patterns. Histograms and box plots were among the visualizations that successfully demonstrated the differences and provided information on how these variables differ depending on educational level. 
+Additional understanding of the connections between these factors was made possible by the statistical analysis. A significant difference between study time, high school and college students was shown by the t-test. Also, the correlation study revealed a slightly positive association between screen time and sleep duration, indicating that although more screen time may have a minor impact on sleep patterns, it is not a significant one. While gender had less of an effect, the regression model also demonstrated that screen time and sleep duration are predictors of study time. Overall, the results indicate that students study habits are significantly influenced by their educational attainment, which may have effect for how academic expectations impact their sleep and screen-time routines.
